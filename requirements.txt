@@ -5,3 +5,7 @@
 click
 dvc[ssh]
 tqdm
+black
+requests
+beautifulsoup4
+pandas
