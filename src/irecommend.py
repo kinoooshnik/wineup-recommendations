@@ -2,17 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import time
-import pandas as pd
 import random
 
 page = 1
 max_page = 80
 rating = 5
 site_id = 7211
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 OPR/71.0.3770.171"
 
 
 def parse_div(div):  # Функция разбора таблицы с вопросом
-    res = []
     print("try")
     # these 2 lines to avoid blocking from website
     rand = random.randint(1, 20)
@@ -20,13 +19,12 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     author_and_photo = div.find_all("div", {"class": "authorAndPhoto"})
     product_name = div.find_all("div", {"class": "productName"})
     product_name_link = product_name[0].find("a")
-    review_link = "https://irecommend.ru" + product_name_link.get("href")
+    product_name_link_href = product_name_link.get("href")
+    review_link = f"https://irecommend.ru{product_name_link_href}"
     # make a request to get a brand of wine
     r = requests.get(
         review_link,
-        headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 OPR/71.0.3770.171"
-        },
+        headers={"User-Agent": user_agent},
     )
     soup = BeautifulSoup(r.text, "html.parser")
     voc_group_vid_37 = soup.find_all("div", {"class": "voc-group vid-37"})
@@ -50,16 +48,16 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     # get username
     username = author_name.find("a").text
     # print(username)
-    res.append(wine_name)
-    res.append(username)
-    res.append(user_mark)
-    res.append(rating)
-    res.append("")
-    res.append(brand)
-    res.append("")
-    res.append(review_link)
-    print(res)
-    return res
+    return {
+        "wine_name": wine_name,
+        "username": username,
+        "rating": user_mark,
+        "variants_number": rating,
+        "wine_type": "",
+        "brand": brand,
+        "wine_link": "",
+        "review_link": review_link,
+    }
 
 
 def simple_request():
@@ -77,21 +75,15 @@ def simple_request():
                 "review_link",
             ]
         )
-
-    for i in range(9, max_page, 1):
+    for i in range(0, max_page, 1):
         if i == 0:
-            url = "https://irecommend.ru/taxonomy/term/938/reviews?tid=7211"
+            url = f"https://irecommend.ru/taxonomy/term/938/reviews?tid={site_id}"
         else:
-            url = "https://irecommend.ru/taxonomy/term/938/reviews?page=%d&tid=%d" % (
-                i,
-                site_id,
-            )  # url страницы
+            url = f"https://irecommend.ru/taxonomy/term/938/reviews?page={i}&tid={site_id}"  # url страницы
         print(url)
         r = requests.get(
             url,
-            headers={
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 OPR/71.0.3770.171"
-            },
+            headers={"User-Agent": user_agent},
         )
         print(r.status_code)
         soup = BeautifulSoup(r.text, "html.parser")
@@ -99,29 +91,9 @@ def simple_request():
 
         for div in divs:
             result = parse_div(div)
-            wine_name = result[0]
-            username = result[1]
-            rate = result[2]
-            variants_number = result[3]
-            wine_type = result[4]
-            brand = result[5]
-            wine_link = result[6]
-            review_link = result[7]
             with open("irecommend.csv", "a", encoding="utf-8") as w_file:
                 file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
-                file_writer.writerow(
-                    [
-                        wine_name,
-                        username,
-                        rate,
-                        variants_number,
-                        wine_type,
-                        brand,
-                        wine_link,
-                        review_link,
-                    ]
-                )
-            # result.to_csv('irecommend.csv', mode='a', encoding='utf-8', header=False)
+                file_writer.writerow(result.values())
 
 
 # Press the green button in the gutter to run the script.
