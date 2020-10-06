@@ -1,27 +1,12 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-
-# In[111]:
-
-
 url = "https://www.somelie.ru/otzyvy/?section=794"
 r = requests.get(url, headers={"User-Agent": "my-app/0.0.1"})
 
-
-# In[112]:
-
-
-def parse_table(table):  # Функция разбора таблицы с вопросом
-
+def parse_table(table):
     res = pd.DataFrame()
     wine_name = ""
     username = ""
@@ -93,31 +78,19 @@ def parse_table(table):  # Функция разбора таблицы с во�
     )
     return res
 
-
-# In[113]:
-
-
 result = pd.DataFrame()
 
 r = requests.get(url)
 soup = BeautifulSoup(r.text)  # Отправляем полученную страницу в библиотеку для парсинга
 table = soup.find_all("div", {"class": "news-item"})
 
-
-# In[114]:
-
-
 for item in table:
     res = parse_table(item)
     result = result.append(res, ignore_index=True)
 result
 
-
-# In[115]:
-
-
 link = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3="
-for i in range(2, 50):
+for i in range(2, 294):
     url = link + str(i)
     r = requests.get(url, headers={"User-Agent": "my-app/0.0.1"})
     soup = BeautifulSoup(r.text)
@@ -126,56 +99,5 @@ for i in range(2, 50):
         res = parse_table(item)
         result = result.append(res, ignore_index=True)
 
-
-# In[163]:
-
-
-result = result.loc[0:4879, :]
-result
-
-
-# In[165]:
-
-
-link = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3="
-for i in range(280, 294):
-    url = link + str(i)
-    r = requests.get(
-        url, headers={"User-agent": "Mozilla/5.0", "Referer": "http://www.python.org/"}
-    )
-    soup = BeautifulSoup(r.text)
-    tables = soup.find_all("div", {"class": "news-item"})
-    for item in table:
-        res = parse_table(item)
-        result = result.append(res, ignore_index=True)
-result
-
-
-# In[ ]:
-
-
-# In[162]:
-
-
-result
-
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-# In[2]:
-
-
 result.to_csv("wine.csv")
-
-
-# In[7]:
-
-
 result = pd.read_csv("wine.csv")
