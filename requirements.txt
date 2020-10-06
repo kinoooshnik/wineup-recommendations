@@ -7,6 +7,5 @@ dvc[ssh]
 tqdm
 black
 requests
-BeautifulSoup
+beautifulsoup4
 pandas
-time
