@@ -3,11 +3,13 @@ from bs4 import BeautifulSoup
 import csv
 import time
 import random
+from tqdm import tqdm
 
 MAX_PAGE = 80
 RATING = 5
 SITE_ID = 7211
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36 OPR/71.0.3770.171"
+FILE_NAME = "irecommend.csv"
 
 
 def parse_div(div):  # Функция разбора таблицы с вопросом
@@ -23,7 +25,7 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     # make a request to get a brand of wine
     r = requests.get(
         review_link,
-        headers={"User-Agent": user_agent},
+        headers={"User-Agent": USER_AGENT},
     )
     soup = BeautifulSoup(r.text, "html.parser")
     voc_group_vid_37 = soup.find_all("div", {"class": "voc-group vid-37"})
@@ -51,7 +53,7 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
         "wine_name": wine_name,
         "username": username,
         "rating": user_mark,
-        "variants_number": rating,
+        "variants_number": RATING,
         "wine_type": "",
         "brand": brand,
         "wine_link": "",
@@ -60,8 +62,8 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
 
 
 def simple_request():
-    with open("irecommend.csv", mode="w", encoding="utf-8") as w_file:
-        file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
+    with open(FILE_NAME, mode="w", encoding="utf-8") as w_file:
+        file_writer = csv.writer(w_file, delimiter=",", lineterminator="\n")
         file_writer.writerow(
             [
                 "wine_name",
@@ -74,25 +76,27 @@ def simple_request():
                 "review_link",
             ]
         )
-    for i in range(0, max_page, 1):
-        if i == 0:
-            url = f"https://irecommend.ru/taxonomy/term/938/reviews?tid={site_id}"
-        else:
-            url = f"https://irecommend.ru/taxonomy/term/938/reviews?page={i}&tid={site_id}"  # url страницы
-        print(url)
-        r = requests.get(
-            url,
-            headers={"User-Agent": user_agent},
-        )
-        print(r.status_code)
-        soup = BeautifulSoup(r.text, "html.parser")
-        divs = soup.find_all("div", {"class": "smTeaser plate teaser-item"})
+    for i in range(0, MAX_PAGE, 1):
+        for j in tqdm(range(0, MAX_PAGE, 1)):
+            if i == 0:
+                url = f"https://irecommend.ru/taxonomy/term/938/reviews?tid={SITE_ID}"
+            else:
+                url = f"https://irecommend.ru/taxonomy/term/938/reviews?page={i}&tid={SITE_ID}"  # url страницы
+            print(url)
+            r = requests.get(
+                url,
+                headers={"User-Agent": USER_AGENT},
+            )
+            print(r.status_code)
+            soup = BeautifulSoup(r.text, "html.parser")
+            divs = soup.find_all("div", {"class": "smTeaser plate teaser-item"})
 
-        for div in divs:
-            result = parse_div(div)
-            with open("irecommend.csv", "a", encoding="utf-8") as w_file:
-                file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
-                file_writer.writerow(result.values())
+            for div in divs:
+                result = parse_div(div)
+                print(result.values())
+                with open(FILE_NAME, "a", encoding="utf-8") as w_file:
+                    file_writer = csv.writer(w_file, delimiter=",", lineterminator="\n")
+                    file_writer.writerow(result.values())
 
 
 # Press the green button in the gutter to run the script.
