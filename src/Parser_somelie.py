@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
+from  tqdm  import  tqdm
 
 
 def parse_table(table):
@@ -89,7 +90,7 @@ def main():
         result = result.append(res, ignore_index=True)
     result
 
-    for i in range(2, 294):
+    for i in tqdm(range(2, 294)):
         URL = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3=" + str(i)
         R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
         SOUP = BeautifulSoup(R.text)
