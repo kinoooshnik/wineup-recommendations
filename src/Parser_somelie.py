@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 
-url = "https://www.somelie.ru/otzyvy/?section=794"
-r = requests.get(url, headers={"User-Agent": "my-app/0.0.1"})
 
 def parse_table(table):
     res = pd.DataFrame()
@@ -32,20 +30,20 @@ def parse_table(table):
     if score_tr != None:
         wine_link = link + wine_link_tr.get("href")
 
-    url = wine_link
-    r = requests.get(url, headers={"User-Agent": "my-app/0.0.1"})
-    soup = BeautifulSoup(r.text)
-    tables = soup.find_all("table", {"class": "characteristics"})
+    URL = wine_link
+    R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
+    SOUP = BeautifulSoup(R.text)
+    TABLES = SOUP.find_all("table", {"class": "characteristics"})
 
-    for item in tables:
+    for item in TABLES:
         wine_type_tr = item.find("td")
         if wine_type_tr != None:
             wine_type = wine_type_tr.text
             break
 
-    tables = soup.find("div", {"class": "subtitle"})
-    if tables != None:
-        brand = tables.text
+    TABLES = SOUP.find("div", {"class": "subtitle"})
+    if TABLES != None:
+        brand = TABLES.text
 
     variants_number = 5
     time.sleep(3)
@@ -78,26 +76,26 @@ def parse_table(table):
     )
     return res
 
-result = pd.DataFrame()
 
-r = requests.get(url)
-soup = BeautifulSoup(r.text)  # Отправляем полученную страницу в библиотеку для парсинга
-table = soup.find_all("div", {"class": "news-item"})
+def main():
+    URL = "https://www.somelie.ru/otzyvy/?section=794"
+    result = pd.DataFrame()
+    R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
+    SOUP = BeautifulSoup(R.text)
+    TABLE = SOUP.find_all("div", {"class": "news-item"})
 
-for item in table:
-    res = parse_table(item)
-    result = result.append(res, ignore_index=True)
-result
-
-link = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3="
-for i in range(2, 294):
-    url = link + str(i)
-    r = requests.get(url, headers={"User-Agent": "my-app/0.0.1"})
-    soup = BeautifulSoup(r.text)
-    tables = soup.find_all("div", {"class": "news-item"})
-    for item in table:
+    for item in TABLE:
         res = parse_table(item)
         result = result.append(res, ignore_index=True)
+    result
 
-result.to_csv("wine.csv")
-result = pd.read_csv("wine.csv")
+    for i in range(2, 294):
+        URL = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3=" + str(i)
+        R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
+        SOUP = BeautifulSoup(R.text)
+        TABLE = SOUP.find_all("div", {"class": "news-item"})
+        for item in TABLE:
+            res = parse_table(item)
+            result = result.append(res, ignore_index=True)
+    FILE = "wine.csv"
+    result.to_csv(FILE)
