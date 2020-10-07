@@ -12,7 +12,6 @@ FILE_NAME = "wine.csv"
 
 
 def parse_table(table):
-    res = pd.DataFrame()
     wine_name = ""
     username = ""
     wine_type = ""
@@ -52,34 +51,18 @@ def parse_table(table):
 
     variants_number = 5
     time.sleep(3)
-    res = res.append(
-        pd.DataFrame(
-            [
-                [
-                    wine_name,
-                    username,
-                    rating,
-                    variants_number,
-                    wine_type,
-                    brand,
-                    wine_link,
-                    review_link,
-                ]
-            ],
-            columns=[
-                "wine_name",
-                "username",
-                "rating",
-                "variants_number",
-                "wine_type",
-                "brand",
-                "wine_link",
-                "review_link",
-            ],
-        ),
-        ignore_index=True,
+    return pd.DataFrame.from_dict(
+        {
+            "wine_name": wine_name,
+            "username": username,
+            "rating": rating,
+            "variants_number": variants_number,
+            "wine_type": wine_type,
+            "brand": brand,
+            "wine_link": wine_link,
+            "review_link": review_link,
+        }
     )
-    return res
 
 
 def main():
@@ -98,9 +81,11 @@ def main():
         r = requests.get(url, headers={"User-Agent": MY_APP})
         soup = BeautifulSoup(r.text)
         table = soup.find_all("div", {"class": "news-item"})
-        for item in TABLE:
+        for item in table:
             res = parse_table(item)
             result = result.append(res, ignore_index=True)
     result.to_csv(FILE)
 
-main()
+
+if __name__ == "__main__":
+    main()
