@@ -1,0 +1,8 @@
+md5: 4d128e270e83f77e3ca42fcfbd2a2575
+wdir: ../..
+outs:
+- md5: 9a9ac3ce10ecbb55018ea228be5ada3a
+  path: data/raw/irecommend.csv
+  cache: true
+  metric: false
+  persist: false
