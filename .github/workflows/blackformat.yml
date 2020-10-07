@@ -12,6 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Black Code Formatter Check
-        uses: lgeiger/black-action@v1.0.1
-        with:
-          args: "--check ."
+        uses: RojerGS/python-black-check@master
