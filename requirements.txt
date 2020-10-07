@@ -5,7 +5,7 @@
 click
 dvc[ssh]
 tqdm
-black
+black==19.10b0
 requests
 beautifulsoup4
 pandas
