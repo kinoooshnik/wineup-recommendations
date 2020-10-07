@@ -23,10 +23,7 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     product_name_link_href = product_name_link.get("href")
     review_link = f"https://irecommend.ru{product_name_link_href}"
     # make a request to get a brand of wine
-    r = requests.get(
-        review_link,
-        headers={"User-Agent": USER_AGENT},
-    )
+    r = requests.get(review_link, headers={"User-Agent": USER_AGENT},)
     soup = BeautifulSoup(r.text, "html.parser")
     voc_group_vid_37 = soup.find_all("div", {"class": "voc-group vid-37"})
     # print(voc_group_vid_37)
@@ -83,10 +80,7 @@ def simple_request():
             else:
                 url = f"https://irecommend.ru/taxonomy/term/938/reviews?page={i}&tid={SITE_ID}"  # url страницы
             print(url)
-            r = requests.get(
-                url,
-                headers={"User-Agent": USER_AGENT},
-            )
+            r = requests.get(url, headers={"User-Agent": USER_AGENT},)
             print(r.status_code)
             soup = BeautifulSoup(r.text, "html.parser")
             divs = soup.find_all("div", {"class": "smTeaser plate teaser-item"})
