@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
-from  tqdm  import  tqdm
+from tqdm import tqdm
 
 
 def parse_table(table):
