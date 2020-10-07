@@ -12,6 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Black Code Formatter Check
-        uses: lgeiger/black-action@v1.0.1
+        uses: RojerGS/python-black-check@master
         with:
-          args: "--check ."
+          line-length: '88'
