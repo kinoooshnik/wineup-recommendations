@@ -4,6 +4,12 @@ import pandas as pd
 import time
 from tqdm import tqdm
 
+MIN_PAGE = 2
+MAX_PAGE = 295
+MY_APP = "my-app/0.0.1"
+LINK = "https://www.somelie.ru"
+FILE_NAME = "wine.csv"
+
 
 def parse_table(table):
     res = pd.DataFrame()
@@ -26,25 +32,23 @@ def parse_table(table):
     if score_tr != None:
         rating = score_tr.text.strip()
 
-    link = "https://www.somelie.ru"
     wine_link_tr = table.find("a")
     if score_tr != None:
-        wine_link = link + wine_link_tr.get("href")
+        wine_link = LINK + wine_link_tr.get("href")
+    url = wine_link
+    r = requests.get(url, headers={"User-Agent": MY_APP})
+    soup = BeautifulSoup(r.text)
+    tables = soup.find_all("table", {"class": "characteristics"})
 
-    URL = wine_link
-    R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
-    SOUP = BeautifulSoup(R.text)
-    TABLES = SOUP.find_all("table", {"class": "characteristics"})
-
-    for item in TABLES:
+    for item in tables:
         wine_type_tr = item.find("td")
         if wine_type_tr != None:
             wine_type = wine_type_tr.text
             break
 
-    TABLES = SOUP.find("div", {"class": "subtitle"})
-    if TABLES != None:
-        brand = TABLES.text
+    tables = soup.find("div", {"class": "subtitle"})
+    if tables != None:
+        brand = tables.text
 
     variants_number = 5
     time.sleep(3)
@@ -79,24 +83,24 @@ def parse_table(table):
 
 
 def main():
-    URL = "https://www.somelie.ru/otzyvy/?section=794"
+    url = "https://www.somelie.ru/otzyvy/?section=794"
     result = pd.DataFrame()
-    R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
-    SOUP = BeautifulSoup(R.text)
-    TABLE = SOUP.find_all("div", {"class": "news-item"})
+    r = requests.get(url, headers={"User-Agent": MY_APP})
+    soup = BeautifulSoup(r.text)
+    table = soup.find_all("div", {"class": "news-item"})
 
-    for item in TABLE:
+    for item in table:
         res = parse_table(item)
         result = result.append(res, ignore_index=True)
-    result
 
-    for i in tqdm(range(2, 294)):
-        URL = "https://www.somelie.ru/otzyvy/?section=794&PAGEN_3=" + str(i)
-        R = requests.get(URL, headers={"User-Agent": "my-app/0.0.1"})
-        SOUP = BeautifulSoup(R.text)
-        TABLE = SOUP.find_all("div", {"class": "news-item"})
+    for i in tqdm(range(MIN_PAGE, MAX_PAGE)):
+        url = f"https://www.somelie.ru/otzyvy/?section=794&PAGEN_3={i}"
+        r = requests.get(url, headers={"User-Agent": MY_APP})
+        soup = BeautifulSoup(r.text)
+        table = soup.find_all("div", {"class": "news-item"})
         for item in TABLE:
             res = parse_table(item)
             result = result.append(res, ignore_index=True)
-    FILE = "wine.csv"
     result.to_csv(FILE)
+
+main()
