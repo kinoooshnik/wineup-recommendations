@@ -13,3 +13,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: Black Code Formatter Check
         uses: RojerGS/python-black-check@master
+        with:
+          line-length: '88'
