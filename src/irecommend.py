@@ -65,6 +65,8 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
 def main(output_filepath):
     if output_filepath.exist():
         df = pd.read_csv(output_filepath)
+        if (len(df.index)) > 0:
+            print(f"There are already {len(df.index)} lines if file")
     else:
         df = pd.DataFrame(columns=COLUMNS)
 
@@ -84,8 +86,6 @@ def main(output_filepath):
             df = df.append(result, ignore_index=True)
             print(len(df.index))
             df.to_csv(output_filepath, index=False)
-
-    # df.to_csv(output_filepath, index=False)
 
 
 if __name__ == "__main__":
