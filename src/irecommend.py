@@ -24,7 +24,7 @@ COLUMNS = [
 
 def parse_div(div):  # Функция разбора таблицы с вопросом
     # these 2 lines to avoid blocking from website
-    rand = random.randint(1, 20)
+    rand = random.randint(1, 30)
     time.sleep(rand)
     author_and_photo = div.find_all("div", {"class": "authorAndPhoto"})
     product_name = div.find_all("div", {"class": "productName"})
@@ -32,7 +32,10 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     product_name_link_href = product_name_link.get("href")
     review_link = f"https://irecommend.ru{product_name_link_href}"
     # make a request to get a brand of wine
-    r = requests.get(review_link, headers={"User-Agent": USER_AGENT},)
+    r = requests.get(
+        review_link,
+        headers={"User-Agent": USER_AGENT},
+    )
     soup = BeautifulSoup(r.text, "html.parser")
     voc_group_vid_37 = soup.find_all("div", {"class": "voc-group vid-37"})
     brand = voc_group_vid_37[0].find("a").text
@@ -60,7 +63,11 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
 @click.command()
 @click.argument("output_filepath", type=click.Path())
 def main(output_filepath):
-    df = pd.DataFrame(columns=COLUMNS)
+    if output_filepath.exist():
+        df = pd.read_csv(output_filepath)
+    else:
+        df = pd.DataFrame(columns=COLUMNS)
+
     for i in tqdm(range(0, MAX_PAGE, 1)):
         if i == 0:
             url = f"https://irecommend.ru/taxonomy/term/938/reviews?tid={SITE_ID}"
@@ -75,8 +82,10 @@ def main(output_filepath):
             result = parse_div(div)
             print(f"{i} of {len(divs)}", result.values())
             df = df.append(result, ignore_index=True)
+            print(len(df.index))
+            df.to_csv(output_filepath, index=False)
 
-    df.to_csv(output_filepath, index=False)
+    # df.to_csv(output_filepath, index=False)
 
 
 if __name__ == "__main__":
