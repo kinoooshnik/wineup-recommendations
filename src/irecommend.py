@@ -57,7 +57,6 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     )
 
 
-
 @click.command()
 @click.argument("output_filepath", type=click.Path())
 def main(output_filepath):
@@ -84,6 +83,7 @@ def main(output_filepath):
             df = df.append(result, ignore_index=True)
             print(len(df.index))
             df.to_csv(output_filepath, index=False)
+
 
 if __name__ == "__main__":
     main()
