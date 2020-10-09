@@ -32,10 +32,7 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
     product_name_link_href = product_name_link.get("href")
     review_link = f"https://irecommend.ru{product_name_link_href}"
     # make a request to get a brand of wine
-    r = requests.get(
-        review_link,
-        headers={"User-Agent": USER_AGENT},
-    )
+    r = requests.get(review_link, headers={"User-Agent": USER_AGENT},)
     soup = BeautifulSoup(r.text, "html.parser")
     voc_group_vid_37 = soup.find_all("div", {"class": "voc-group vid-37"})
     brand = voc_group_vid_37[0].find("a").text
@@ -58,6 +55,7 @@ def parse_div(div):  # Функция разбора таблицы с вопр�
             [wine_name, username, user_mark, RATING, "", brand, "", review_link],
         )
     )
+
 
 
 @click.command()
@@ -86,7 +84,6 @@ def main(output_filepath):
             df = df.append(result, ignore_index=True)
             print(len(df.index))
             df.to_csv(output_filepath, index=False)
-
 
 if __name__ == "__main__":
     main()
