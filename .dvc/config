@@ -1,0 +1,5 @@
+[core]
+    remote = wineup-dvc
+['remote "wineup-dvc"']
+    url = ssh://wineup-dvc@semiletov.me:2203/dvc
+    keyfile = C:\Users\Top\Downloads\id_rsa_wineup_dvc
