@@ -74,7 +74,7 @@ def simple_request():
 
     for i in tqdm(range(0, MAX_PAGE, 1)):
 
-        url = "https://www.vinofan.ru/inf/rating/page={i}"  # url страницы
+        url = f"https://www.vinofan.ru/inf/rating/page{i+1}"  # url страницы
         r = requests.get(url, headers={"User-Agent": USER_AGENT})
         soup = BeautifulSoup(r.text, "html.parser")
         divs = soup.find_all("div", {"class": "unitcell"})
