@@ -1,0 +1,36 @@
+make_review_table:
+  cmd: python src/data/make_review_table.py data/raw/irecommend.csv data/raw/vinofan.csv
+    data/raw/test.txt data/interim/review.csv
+  deps:
+  - path: data/raw/irecommend.csv
+    md5: fa44a5502f7458a456a082450eeece7b
+  - path: data/raw/test.txt
+    md5: 7d511b019cddd7f834db43494bf1cd06
+  - path: data/raw/vinofan.csv
+    md5: fab0c50db717b29b163a2c94e1df6aca
+  - path: src/data/make_review_table.py
+    md5: 2f199d78af5c2ce7ad8eda56a9b1740a
+  outs:
+  - path: data/interim/review.csv
+    md5: c4a407916308a25fb8adfe8cdda8b745
+make_adjacency_matrix:
+  cmd: python src/features/make_adjacency_matrix.py data/interim/review.csv data/processed/adjacency_matrix.csv
+  deps:
+  - path: data/interim/review.csv
+    md5: c4a407916308a25fb8adfe8cdda8b745
+  - path: src/features/make_adjacency_matrix.py
+    md5: 0430b6989c2f96105e9f1010ae5294c3
+  outs:
+  - path: data/processed/adjacency_matrix.csv
+    md5: e0dbdccd9d757fdb92e083b91a7672f7
+make_filtered_adjacency_matrix:
+  cmd: python src/features/make_filtered_adjacency_matrix.py data/processed/adjacency_matrix.csv
+    data/processed/filtered_adjacency_matrix.csv
+  deps:
+  - path: data/processed/adjacency_matrix.csv
+    md5: e0dbdccd9d757fdb92e083b91a7672f7
+  - path: src/features/make_filtered_adjacency_matrix.py
+    md5: 93655e5c03904bc55dd3ef12c1d4b7c9
+  outs:
+  - path: data/processed/filtered_adjacency_matrix.csv
+    md5: 5435be1d6e4e474ab8205064a4ce5bbf
