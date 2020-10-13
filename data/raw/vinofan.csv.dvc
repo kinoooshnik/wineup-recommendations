@@ -1,3 +1,4 @@
+wdir: ../..
 outs:
 - md5: fab0c50db717b29b163a2c94e1df6aca
   path: data/raw/vinofan.csv
