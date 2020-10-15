@@ -2,4 +2,3 @@
     remote = wineup-dvc
 ['remote "wineup-dvc"']
     url = ssh://wineup-dvc@semiletov.me:2203/dvc
-    keyfile = C:\Users\bochk\Desktop\abc

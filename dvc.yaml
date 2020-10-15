@@ -1,0 +1,24 @@
+stages:
+  make_review_table:
+    cmd: python src/data/make_review_table.py data/raw/irecommend.csv data/raw/vinofan.csv data/raw/test.txt data/interim/review.csv
+    deps:
+      - src/data/make_review_table.py
+      - data/raw/irecommend.csv
+      - data/raw/vinofan.csv
+      - data/raw/test.txt
+    outs:
+      - data/interim/review.csv
+  make_adjacency_matrix:
+    cmd: python src/features/make_adjacency_matrix.py data/interim/review.csv data/processed/adjacency_matrix.csv
+    deps:
+      - src/features/make_adjacency_matrix.py
+      - data/interim/review.csv
+    outs:
+      - data/processed/adjacency_matrix.csv
+  make_filtered_adjacency_matrix:
+    cmd: python src/features/make_filtered_adjacency_matrix.py data/processed/adjacency_matrix.csv data/processed/filtered_adjacency_matrix.csv
+    deps:
+      - src/features/make_filtered_adjacency_matrix.py
+      - data/processed/adjacency_matrix.csv
+    outs:
+      - data/processed/filtered_adjacency_matrix.csv
