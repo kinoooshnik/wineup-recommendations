@@ -43,7 +43,9 @@ def main(reviews_path, output_adjacency_matrix_path):
                 result.append(None)
 
         adjacency_matrix.append(result)
-    adjacency_matrix = pd.DataFrame(adjacency_matrix, columns=reviews["wine_id"].sort_values().unique())
+    adjacency_matrix = pd.DataFrame(
+        adjacency_matrix, columns=reviews["wine_id"].sort_values().unique()
+    )
     adjacency_matrix.to_csv(output_adjacency_matrix_path, index=False)
 
 
