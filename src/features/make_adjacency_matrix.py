@@ -20,14 +20,14 @@ def main(reviews_path, output_adjacency_matrix_path):
             .where(reviews["user_id"] == user_id)
             .dropna()
         )
-        result = [None] * len(wines)
+        result = [int(user_id)] + [None] * len(wines)
         for _, user_wine in user_wines.iterrows():
-            result[int(user_wine["wine_id"])] = (
+            result[int(user_wine["wine_id"]) + 1] = (
                 user_wine["rating"] / user_wine["variants"]
             )
 
         adjacency_matrix.append(result)
-    adjacency_matrix = pd.DataFrame(adjacency_matrix, columns=wines)
+    adjacency_matrix = pd.DataFrame(adjacency_matrix, columns=["user_id", *wines])
     adjacency_matrix.to_csv(output_adjacency_matrix_path, index=False)
 
 
