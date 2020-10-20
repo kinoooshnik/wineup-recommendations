@@ -30,7 +30,7 @@ make_filtered_adjacency_matrix:
   - path: data/processed/adjacency_matrix.csv
     md5: 85c22f334efe4740c114ac39e212dc77
   - path: src/features/make_filtered_adjacency_matrix.py
-    md5: d5a56f34b388f1faacae6f2f7a9f1daf
+    md5: 90d936716142f7470ad03d8e222453fc
   outs:
   - path: data/processed/filtered_adjacency_matrix.csv
-    md5: 5435be1d6e4e474ab8205064a4ce5bbf
+    md5: b6fbda6d87518f36506d058517b51b4e
