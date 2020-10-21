@@ -158,6 +158,14 @@ COLUMNS = [
 ]
 
 
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
 def make_table(irecommend_path, vinofan_path, somelie_path):
     irecommend = pd.read_csv(irecommend_path)
     vinofan = pd.read_csv(vinofan_path)
@@ -166,6 +174,9 @@ def make_table(irecommend_path, vinofan_path, somelie_path):
     concat["wine_name"] = concat["wine_name"].map(
         lambda x: x.replace(" ", " ")
     )  # пробелы разные
+
+    # удаление строк, где оценка - не число
+    concat = concat.drop(concat[concat["rating"].apply(lambda x: not isfloat(x))].index)
 
     for wine in concat["wine_name"]:
         for wine_list in COINCIDENCES:
