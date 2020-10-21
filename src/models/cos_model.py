@@ -20,15 +20,19 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
         adjacency_matrix.user_id == user_id
     ]  # find a user vector
     numpy_user_vec = user_vec.to_numpy()  # convert to numpy
-    
-    numpy_filtered_adjacency_matrix = filtered_adjacency_matrix.to_numpy()# convert to numpy
+
+    numpy_filtered_adjacency_matrix = (
+        filtered_adjacency_matrix.to_numpy()
+    )  # convert to numpy
     raws, columns = numpy_filtered_adjacency_matrix.shape  # shape of filtered matrix
     wine_popularity = np.zeros(
         columns - 1
     )  # array to count wine popularity, -1 because we don`t count column with user_id
     # chenging values of array from [0;1] to [-1;1]
-    tried_wines = [] # list, that will contain ids of wines whisch user has tried already(there is a mark from user on this wine)
-    not_tried_wines = [] # vicae versa
+    tried_wines = (
+        []
+    )  # list, that will contain ids of wines whisch user has tried already(there is a mark from user on this wine)
+    not_tried_wines = []  # vicae versa
     for i in range(raws):
         for j in range(1, columns):
             # we append only once in this loop
@@ -38,20 +42,29 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
                     numpy_user_vec[0][j] = 0
                 else:
                     tried_wines.append(j)
-            
+
             if math.isnan(numpy_filtered_adjacency_matrix[i][j]):
                 numpy_filtered_adjacency_matrix[i][j] = 0
             else:
                 numpy_filtered_adjacency_matrix[i][j] = (
-                        numpy_filtered_adjacency_matrix[i][j] * 2 - 1
-                    ) 
+                    numpy_filtered_adjacency_matrix[i][j] * 2 - 1
+                )
     short_filtered_matrix = np.zeros((raws, columns - 1))  # matrix without user_id
-    short_filtered_matrix = numpy_filtered_adjacency_matrix[:,1:]
+    short_filtered_matrix = numpy_filtered_adjacency_matrix[:, 1:]
     short_user_vec = numpy_user_vec[0][1:]  # user vector without user_id
-    copy_user_vec, copy_filtered_matrix = np.copy(short_user_vec), np.copy(short_filtered_matrix) # make a copy of arrays to delete columns later
-    minus_1 = [(lambda x: x-1)(x) for x in (not_tried_wines)] # substract 1, since the numbering in short arrays starts from zero
-    copy_user_vec = np.delete(copy_user_vec, minus_1, 0) # delete columns with those winesthat user hasn`t tried yet
-    copy_filtered_matrix = np.delete(copy_filtered_matrix, minus_1, 1) # the same as previous step
+    copy_user_vec, copy_filtered_matrix = (
+        np.copy(short_user_vec),
+        np.copy(short_filtered_matrix),
+    )  # make a copy of arrays to delete columns later
+    minus_1 = [
+        (lambda x: x - 1)(x) for x in (not_tried_wines)
+    ]  # substract 1, since the numbering in short arrays starts from zero
+    copy_user_vec = np.delete(
+        copy_user_vec, minus_1, 0
+    )  # delete columns with those winesthat user hasn`t tried yet
+    copy_filtered_matrix = np.delete(
+        copy_filtered_matrix, minus_1, 1
+    )  # the same as previous step
     similarity_vector = cosine_similarity(
         copy_user_vec.reshape(1, -1), copy_filtered_matrix
     )  # measure cosine similarity between user vector and filtered_matrix, wines that user hasn`t tried are not taken into consideration
@@ -69,7 +82,9 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
     wine_popularity_indexes += 1  # adding 1 because numbering begin from 0
     # delete from recomendations those wines that user has already tried
     for ind in tried_wines:
-        wine_popularity_indexes = np.delete(wine_popularity_indexes, np.where(wine_popularity_indexes == ind))
+        wine_popularity_indexes = np.delete(
+            wine_popularity_indexes, np.where(wine_popularity_indexes == ind)
+        )
     # returning descending order
     return wine_popularity_indexes[::-1]
 
