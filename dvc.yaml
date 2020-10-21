@@ -1,11 +1,11 @@
 stages:
   make_review_table:
-    cmd: python src/data/make_review_table.py data/raw/irecommend.csv data/raw/vinofan.csv data/raw/test.txt data/interim/review.csv
+    cmd: python src/data/make_review_table.py data/raw/irecommend.csv data/raw/vinofan.csv data/raw/somelie.csv data/interim/review.csv
     deps:
       - src/data/make_review_table.py
       - data/raw/irecommend.csv
       - data/raw/vinofan.csv
-      - data/raw/test.txt
+      - data/raw/somelie.csv
     outs:
       - data/interim/review.csv
   make_adjacency_matrix:

@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+
 import math
 
 TOP_N = 3  # number of vectors which are the most similar to user vector, value can be changed
@@ -29,6 +30,7 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
         columns - 1
     )  # array to count wine popularity, -1 because we don`t count column with user_id
     # chenging values of array from [0;1] to [-1;1]
+
     tried_wines = (
         []
     )  # list, that will contain ids of wines whisch user has tried already(there is a mark from user on this wine)
@@ -68,6 +70,7 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
     similarity_vector = cosine_similarity(
         copy_user_vec.reshape(1, -1), copy_filtered_matrix
     )  # measure cosine similarity between user vector and filtered_matrix, wines that user hasn`t tried are not taken into consideration
+
     sorted_indexes = np.argsort(similarity_vector)  # sort similarity`s vector indices
     top_n_sorted_indexes = sorted_indexes[0][::-1][
         :TOP_N
@@ -80,11 +83,13 @@ def baseline_model(user_id, adjacency_matrix_path, filtered_adjacency_matrix_pat
         wine_popularity
     )  # sort indexes of most popular wine
     wine_popularity_indexes += 1  # adding 1 because numbering begin from 0
+
     # delete from recomendations those wines that user has already tried
     for ind in tried_wines:
         wine_popularity_indexes = np.delete(
             wine_popularity_indexes, np.where(wine_popularity_indexes == ind)
         )
+
     # returning descending order
     return wine_popularity_indexes[::-1]
 
