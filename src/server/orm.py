@@ -1,32 +1,33 @@
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = "C:\Users\bochk\Desktop\Документы\ИТМО\7 семестр\Технологии разработки программного обеспечения\Project\wineup-recommendations3\wineup-recommendations\src\db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "db/db.db"
 db = SQLAlchemy(app)
 
 
 class Wine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    internal_id = db.Column(db.Integer, nullable=False)
+    internal_id = db.Column(db.Integer, nullable=True)
     all_names = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
-        return "<User %r>" % self.id
+        return f"<Wine {self.id}>"
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    internal_id = db.Column(db.Integer, nullable=False)
+    internal_id = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
-        return "<User %r>" % self.id
+        return f"<User {self.id}>"
 
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     rating = db.Column(db.Integer)
+    variants = db.Column(db.Integer)
 
     wine_id = db.Column(db.Integer, db.ForeignKey("wine.id"), nullable=False)
     wine = db.relationship("Wine", backref=db.backref("reviews", lazy=True))
@@ -35,4 +36,4 @@ class Review(db.Model):
     user = db.relationship("User", backref=db.backref("reviews", lazy=True))
 
     def __repr__(self):
-        return "<User %r>" % self.id
+        return f"<Review {self.id}>"
