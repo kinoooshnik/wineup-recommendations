@@ -10,4 +10,5 @@ requests
 beautifulsoup4
 pandas
 sklearn
+flask
 peewee
