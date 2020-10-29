@@ -1,0 +1,4 @@
+wdir: ../..
+outs:
+- md5: fa44a5502f7458a456a082450eeece7b
+  path: data/raw/irecommend.csv
