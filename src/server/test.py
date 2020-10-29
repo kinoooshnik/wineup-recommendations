@@ -1,28 +1,32 @@
-from orm import Wine
-from orm import User
-from orm import Review
-from orm import db
+from src.server.orm import User, Wine, Review, db, create_tables
 
-db.create_all()
+create_tables()
+db.connect()
 
-wine1 = Wine(id=1, internal_id=1, all_names="a")
-wine2 = Wine(id=2, internal_id=None, all_names="b")
-wine3 = Wine(id=3, internal_id=3, all_names="c")
 
-db.session.add(wine1)
-db.session.add(wine2)
-db.session.add(wine3)
-db.session.commit()
+# Первый способ создавать строки в БД
+wine1 = Wine.create(internal_id=1, all_names="a")
+wine2 = Wine.create(internal_id=None, all_names=None)
+# Второй способ создавать строки в БД
+wine3 = Wine(internal_id=2, all_names="n")
+wine3.save()
 
-print(Wine.query.all())
+user1 = User.create(internal_id=1)
+user2 = User.create(internal_id=2)
 
-user1 = Wine(id=1, internal_id=1)
-user2 = Wine(id=2, internal_id=None)
-user3 = Wine(id=3, internal_id=3)
+print(*[wine for wine in Wine.select()], sep="\n")
+print()
+print(*[user for user in User.select()], sep="\n")
+print()
 
-db.session.add(user1)
-db.session.add(user2)
-db.session.add(user3)
-db.session.commit()
+review1 = Review.create(rating=4, variants=5, wine=wine1, user=user1)
+review2 = Review.create(rating=3, variants=5, wine=wine2, user=user1)
+review3 = Review.create(rating=5, variants=5, wine=wine3, user=user1)
+review4 = Review.create(rating=5, variants=5, wine=wine1, user=user2)
 
-print(User.query.all())
+print(*[wine for wine in user1.wine_reviews], sep="\n")
+print()
+print(*[user for user in wine1.users_review], sep="\n")
+print()
+
+db.close()

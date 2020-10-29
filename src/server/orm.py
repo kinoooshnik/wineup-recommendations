@@ -1,39 +1,40 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from peewee import *
+from playhouse.db_url import connect
 
-app = Flask(__name__)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_DATABASE_URI"] = "db/db.db"
-db = SQLAlchemy(app)
+db = connect('sqlite:///db/default.db')
 
 
-class Wine(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    internal_id = db.Column(db.Integer, nullable=True)
-    all_names = db.Column(db.String(200), nullable=False)
-
-    def __repr__(self):
-        return f"<Wine {self.id}>"
+class BaseModel(Model):
+    class Meta:
+        database = db
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    internal_id = db.Column(db.Integer, nullable=True)
+class Wine(BaseModel):
+    internal_id = IntegerField(null=True)
+    all_names = CharField(null=True)
 
-    def __repr__(self):
-        return f"<User {self.id}>"
+    def __str__(self):
+        return f"Wine(id: {self.get_id()}, internal_id: {self.internal_id}, all_names: {self.all_names})"
 
 
-class Review(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    rating = db.Column(db.Integer)
-    variants = db.Column(db.Integer)
+class User(BaseModel):
+    internal_id = IntegerField(null=True)
 
-    wine_id = db.Column(db.Integer, db.ForeignKey("wine.id"), nullable=False)
-    wine = db.relationship("Wine", backref=db.backref("reviews", lazy=True))
+    def __str__(self):
+        return f"User(id: {self.get_id()}, internal_id: {self.internal_id})"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    user = db.relationship("User", backref=db.backref("reviews", lazy=True))
 
-    def __repr__(self):
-        return f"<Review {self.id}>"
+class Review(BaseModel):
+    rating = IntegerField()
+    variants = IntegerField()
+
+    wine = ForeignKeyField(Wine, backref='users_review')
+    user = ForeignKeyField(User, backref='wine_reviews')
+
+    def __str__(self):
+        return f"Review(id: {self.get_id()}, rating: {self.rating}, variants: {self.variants}, wine: {self.wine}, user: {self.user})"
+
+
+def create_tables():
+    with db:
+        db.create_tables([Wine, User, Review])
