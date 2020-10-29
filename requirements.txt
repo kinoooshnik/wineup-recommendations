@@ -9,3 +9,4 @@ black
 requests
 beautifulsoup4
 pandas
+flask
