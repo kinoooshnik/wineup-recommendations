@@ -1,3 +1,5 @@
+from typing import List
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,6 +12,7 @@ from .serializers import (
 )
 from tqdm import tqdm
 import pandas as pd
+import numpy as np
 from .recommendation_model import model
 
 
@@ -36,7 +39,14 @@ def build_adjacency_matrix() -> pd.DataFrame:
     return adjacency_matrix
 
 
+def most_popular_wines(adjacency_matrix: pd.DataFrame) -> List[int]:
+    most_popular = np.argsort(adjacency_matrix.sum(axis=0))
+    most_popular_index = adjacency_matrix.index[most_popular][::-1]
+    return most_popular_index
+
+
 adjacency_matrix = build_adjacency_matrix()
+most_popular_index = most_popular_wines(adjacency_matrix)
 
 
 @api_view(["GET", "POST"])
@@ -115,11 +125,12 @@ def review_list(request):
         )
         if serializer.is_valid():
             serializer.save()
-            global adjacency_matrix
+            global adjacency_matrix, most_popular_index
             index = adjacency_matrix[adjacency_matrix["user_id"] == user.pk].index[0]
             adjacency_matrix.loc[index, wine.pk] = float(
                 request.data["rating"]
             ) / float(request.data["variants"])
+            most_popular_index = most_popular_wines(adjacency_matrix)
             return Response({"result": "ok"}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -131,7 +142,7 @@ def get_recommendations(request, user_id):
     """
     global adjacency_matrix
     # TODO: получать по внешнему user_id внутренний user_id
-    wines_id = model(adjacency_matrix, user_id)
+    wines_id = model(adjacency_matrix, most_popular_index, user_id)
     offset = int(request.query_params.get("offset", 0))
     amount = int(request.query_params.get("amount", 20))
     print(offset, amount)

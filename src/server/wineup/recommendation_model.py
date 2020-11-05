@@ -7,7 +7,9 @@ import numpy as np
 TOP_N = 50  # number of vectors which are the most similar to user vector, value can be changed
 
 
-def model(adjacency_matrix: pd.DataFrame, user_pk: int) -> List[int]:
+def model(
+    adjacency_matrix: pd.DataFrame, most_popular_index: List[int], user_pk: int
+) -> List[int]:
     user_vec = adjacency_matrix[adjacency_matrix["user_id"] == user_pk]
     # TODO: удалить перед выкаткой в прод
     if len(user_vec) == 0:
@@ -45,10 +47,8 @@ def model(adjacency_matrix: pd.DataFrame, user_pk: int) -> List[int]:
     else:
         recommended_wines_sorted_index = []
 
-    most_popular = np.argsort(adjacency_matrix.sum(axis=0))
-    most_popular_index = adjacency_matrix.index[most_popular][::-1]
-    most_popular_index = [
-        i for i in most_popular_index if i not in recommended_wines_sorted_index
-    ]
+    most_popular_index = list(
+        filter(lambda x: x not in recommended_wines_sorted_index, most_popular_index)
+    )
 
     return recommended_wines_sorted_index + most_popular_index
