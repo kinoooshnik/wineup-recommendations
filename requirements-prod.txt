@@ -1,0 +1,9 @@
+# local package
+-e .
+
+# external requirements
+pandas
+sklearn
+numpy
+django
+djangorestframework
